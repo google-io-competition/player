@@ -1,10 +1,9 @@
-
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 import 'package:player/settings/persistence/local_storage_settings_persistence.dart';
 import 'package:player/settings/persistence/settings_persistence.dart';
 
-/// An class that holds settings like [playerName] or [musicOn],
+/// An class that holds settings like [displayName] or [musicOn],
 /// and saves them to an injected persistence store.
 class SettingsController {
   static final _log = Logger('SettingsController');
@@ -23,7 +22,7 @@ class SettingsController {
   ValueNotifier<bool> audioOn = ValueNotifier(true);
 
   /// The player's name. Used for things like high score lists.
-  ValueNotifier<String> playerName = ValueNotifier('Player');
+  ValueNotifier<String> displayName = ValueNotifier('Player');
 
   /// Whether or not the sound effects (sfx) are on.
   ValueNotifier<bool> soundsOn = ValueNotifier(true);
@@ -42,8 +41,8 @@ class SettingsController {
   }
 
   void setPlayerName(String name) {
-    playerName.value = name;
-    _store.savePlayerName(playerName.value);
+    displayName.value = name;
+    _store.savePlayerName(displayName.value);
   }
 
   void toggleAudioOn() {
@@ -79,7 +78,7 @@ class SettingsController {
       _store
           .getMusicOn(defaultValue: true)
           .then((value) => musicOn.value = value),
-      _store.getPlayerName().then((value) => playerName.value = value),
+      _store.getPlayerName().then((value) => displayName.value = value),
     ]);
 
     _log.fine(() => 'Loaded settings: $loadedValues');

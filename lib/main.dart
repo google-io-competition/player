@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
 import 'package:player/router.dart';
+import 'package:player/settings/settings.dart';
+import 'package:player/style/audio/audio_controller.dart';
 import 'package:player/style/pallette.dart';
 import 'package:provider/provider.dart';
 
@@ -14,7 +16,7 @@ void main() async {
   // Basic logging setup.
   Logger.root.level = kDebugMode ? Level.FINE : Level.INFO;
   Logger.root.onRecord.listen((record) {
-    dev.log(record.message, time: record.time, level: record.level.value, name: record.loggerName,);
+    dev.log(record.message, time: record.time, level: record.level.value, name: record.loggerName);
   });
 
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,34 +29,17 @@ void main() async {
   runApp(const Player());
 }
 
-class Player extends StatelessWidget{
+class Player extends StatelessWidget {
   const Player({super.key});
 
   @override
   Widget build(BuildContext context) {
     return AppLifecycleObserver(
       child: MultiProvider(
-        // This is where you add objects that you want to have available
-        // throughout your game.
-        //
-        // Every widget in the game can access these objects by calling
-        // `context.watch()` or `context.read()`.
-        // See `lib/main_menu/main_menu_screen.dart` for example usage.
         providers: [
-          //Provider(create: (context) => SettingsController()),
-          //Provider(create: (context) => Palette()),
-          //ChangeNotifierProvider(create: (context) => PlayerProgress()),
-          // // Set up audio.
-          // ProxyProvider2<AppLifecycleStateNotifier, SettingsController, AudioController>(
-          //   create: (context) => AudioController(),
-          //   update: (context, lifecycleNotifier, settings, audio) {
-          //     audio!.attachDependencies(lifecycleNotifier, settings);
-          //     return audio;
-          //   },
-          //   dispose: (context, audio) => audio.dispose(),
-          //   // Ensures that music starts immediately.
-          //   lazy: false,
-          // ),
+          Provider(create: (context) => SettingsController()),
+          Provider(create: (context) => Palette()),
+          Provider(create: (context) => AudioController()),
         ],
         child: Builder(builder: (context) {
           final palette = context.watch<Palette>();
@@ -71,7 +56,6 @@ class Player extends StatelessWidget{
               ),
               useMaterial3: true,
             ).copyWith(
-              // Make buttons more fun.
               filledButtonTheme: FilledButtonThemeData(
                 style: FilledButton.styleFrom(
                   textStyle: const TextStyle(

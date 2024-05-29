@@ -162,10 +162,12 @@ class AudioController {
       case AppLifecycleState.detached:
       case AppLifecycleState.hidden:
         _stopAllSound();
+        break;
       case AppLifecycleState.resumed:
         if (_settings!.audioOn.value && _settings!.musicOn.value) {
           _startOrResumeMusic();
         }
+        break;
       case AppLifecycleState.inactive:
         // No need to react to this state change.
         break;
