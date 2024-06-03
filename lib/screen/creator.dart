@@ -9,8 +9,8 @@ import '../style/audio/sounds.dart';
 import '../style/pallette.dart';
 import '../style/themed_screen.dart';
 
-class MainMenuScreen extends StatelessWidget {
-  const MainMenuScreen({super.key});
+class GameCreationStart extends StatelessWidget {
+  const GameCreationStart({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,10 +24,14 @@ class MainMenuScreen extends StatelessWidget {
         squarishMainArea: Center(
           child: Transform.rotate(
             angle: -0.1,
-            child: Image.asset(
-              'icon/logo.png',
-              width: 300,
-              height: 300,
+            child: const Text(
+              'Play\r',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: 'Permanent Marker',
+                fontSize: 55,
+                height: 1,
+              ),
             ),
           ),
         ),
@@ -37,24 +41,10 @@ class MainMenuScreen extends StatelessWidget {
             ThemedButton(
               onPressed: () {
                 audioController.playSfx(SfxType.buttonTap);
-                GoRouter.of(context).go('/join');
+                GoRouter.of(context).go('/');
               },
-              child: const Text('Join'),
+              child: const Text('Home'),
             ),
-            _gap,
-            ThemedButton(
-              onPressed: () {
-                audioController.playSfx(SfxType.buttonTap);
-                GoRouter.of(context).go('/host');
-              },
-              child: const Text('Host'),
-            ),
-            _gap,
-            ThemedButton(
-              onPressed: () => GoRouter.of(context).push('/create'),
-              child: const Text('Create'),
-            ),
-            _gap,
             Padding(
               padding: const EdgeInsets.only(top: 32),
               child: ValueListenableBuilder<bool>(
@@ -67,12 +57,9 @@ class MainMenuScreen extends StatelessWidget {
                 },
               ),
             ),
-            _gap,
           ],
         ),
       ),
     );
   }
-
-  static const _gap = SizedBox(height: 10);
 }
