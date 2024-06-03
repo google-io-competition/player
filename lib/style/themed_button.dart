@@ -1,11 +1,8 @@
-
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 class ThemedButton extends StatefulWidget {
   final Widget child;
-
   final VoidCallback? onPressed;
 
   const ThemedButton({super.key, required this.child, this.onPressed});
@@ -38,9 +35,18 @@ class _ThemedButtonState extends State<ThemedButton>
       },
       child: RotationTransition(
         turns: _controller.drive(const _MySineTween(0.005)),
-        child: FilledButton(
-          onPressed: widget.onPressed,
-          child: widget.child,
+        child: GestureDetector(
+          onTap: widget.onPressed,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Image.asset(
+                'icon/button.png',
+                fit: BoxFit.cover,
+              ),
+              widget.child,
+            ],
+          ),
         ),
       ),
     );
