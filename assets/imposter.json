@@ -1,0 +1,53 @@
+{
+  "name": "Imposter",
+  "version": 1,
+  "author": "funalex",
+  "max-players": 6,
+  "min-players": 2,
+  "palette": {
+    "primaryColor": "FF2196F3",
+    "accentColor": "FFFFC107"
+  },
+  "states": [
+    {
+      "route": "first",
+      "duration": 30,
+      "elements": [
+        {
+          "type": "button",
+          "text": "Click Me",
+          "x": 50,
+          "y": 20,
+          "centered": true,
+          "action": {
+            "type": "router",
+            "route": "second"
+          }
+        }
+      ]
+    },
+    {
+      "route": "second",
+      "duration": 30,
+      "elements": [
+        {
+          "type": "button",
+          "text": "Click Me",
+          "x": 50,
+          "y": 20,
+          "centered": true,
+          "action": {
+            "type": "router",
+            "route": "first"
+          }
+        }
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "type": "texture",
+      "location": "https://game-master.web.app/assets/textures/imposter/logo.png"
+    }
+  ]
+}

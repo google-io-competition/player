@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'dart:developer' as dev;
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,7 +12,14 @@ import 'package:player/style/audio/audio_controller.dart';
 import 'package:player/style/pallette.dart';
 import 'package:provider/provider.dart';
 
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'lifecycle/app_lifecycle.dart';
+
+// Function to load the JSON file from assets
+Future<String> loadJsonAsset(String path) async {
+  return await rootBundle.loadString(path);
+}
 
 void main() async {
   // Basic logging setup.
@@ -25,8 +34,15 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-
-  runApp(const Player());
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(
+    Provider.value(
+      value: FirebaseFirestore.instance,
+      child: const Player(),
+    ),
+  );
 }
 
 class Player extends StatelessWidget {
@@ -45,7 +61,7 @@ class Player extends StatelessWidget {
           final palette = context.watch<Palette>();
 
           return MaterialApp.router(
-            title: 'My Flutter Game',
+            title: 'PLAY\'r',
             theme: ThemeData.from(
               colorScheme: ColorScheme.fromSeed(
                 seedColor: palette.darkPen,
