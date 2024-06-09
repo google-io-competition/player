@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:player/style/themed_button.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'dart:io';
-
+import '../multiplayer/api_service.dart';
+import '../multiplayer/firestore_controller.dart';
+import '../multiplayer/websocket_service.dart';
 import '../settings/settings.dart';
-import '../style/audio/audio_controller.dart';
-import '../style/audio/sounds.dart';
-import '../style/pallette.dart';
-import '../style/themed_screen.dart';
+import 'lobby.dart';
 
 class PlayScreen extends StatefulWidget {
   const PlayScreen({super.key});
@@ -20,9 +15,9 @@ class PlayScreen extends StatefulWidget {
 }
 
 class _PlayScreenState extends State<PlayScreen> {
-  final TextEditingController _lobbyController = TextEditingController();
-  List<String> _lobbies = [];
-  String _errorMessage = '';
+  final TextEditingController _lobbyIdController = TextEditingController();
+  String? _errorMessage;
+  List<dynamic> lobbies = [];
 
   @override
   void initState() {
@@ -32,120 +27,95 @@ class _PlayScreenState extends State<PlayScreen> {
 
   Future<void> _fetchLobbies() async {
     try {
-      final response = await http.get(Uri.parse('https://game-master.web.app/lobbies'));
-      if (response.statusCode == 200) {
-        setState(() {
-          _lobbies = List<String>.from(json.decode(response.body));
-        });
-      } else {
-        setState(() {
-          _errorMessage = 'Failed to load lobbies';
-        });
-      }
-    } on SocketException catch (e) {
+      final apiService = context.read<ApiService>();
+      final fetchedLobbies = await apiService.getLobbies();
       setState(() {
-        _errorMessage = 'Network error: ${e.message}';
+        lobbies = fetchedLobbies;
       });
     } catch (e) {
       setState(() {
-        _errorMessage = 'An unexpected error occurred';
+        _errorMessage = e.toString();
       });
     }
   }
 
-  void _joinLobby() {
-    String lobbyId = _lobbyController.text;
-    if (lobbyId.isNotEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Joining lobby $lobbyId')),
+  Future<void> _joinLobby(String lobbyId) async {
+    final apiService = context.read<ApiService>();
+    final webSocketService = context.read<WebSocketService>();
+    final firestoreController = FirestoreController(
+      instance: FirebaseFirestore.instance,
+      boardState: BoardState(element: BoardElement(text: '', duration: 0)),
+    );
+    final settingsController = context.read<SettingsController>();
+    final userId = settingsController.displayName.value;
+
+    try {
+      await apiService.updateLobbyActivity(lobbyId);
+      webSocketService.connect(lobbyId);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LobbyScreen(
+            lobbyId: lobbyId,
+            userId: userId,
+            firestoreController: firestoreController,
+            webSocketService: webSocketService,
+          ),
+        ),
       );
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Lobby not found';
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final palette = context.watch<Palette>();
-    final settingsController = context.watch<SettingsController>();
-    final audioController = context.watch<AudioController>();
-
     return Scaffold(
-      backgroundColor: palette.backgroundMain,
-      body: ResponsiveScreen(
-        squarishMainArea: Center(
-          child: Transform.rotate(
-            angle: -0.1,
-            child: const Text(
-              'Game Master',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'Permanent Marker',
-                fontSize: 55,
-                height: 1,
-              ),
-            ),
-          ),
-        ),
-        rectangularMenuArea: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
+      appBar: AppBar(title: const Text('Play')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ThemedButton(
-              onPressed: () {
-                audioController.playSfx(SfxType.buttonTap);
-                GoRouter.of(context).go('/');
-              },
-              child: const Text('Home'),
-            ),
-            _gap,
-            ThemedButton(
-              onPressed: () => GoRouter.of(context).push('/settings'),
-              child: const Text('Settings'),
-            ),
-            _gap,
-            Padding(
-              padding: const EdgeInsets.only(top: 32),
-              child: ValueListenableBuilder<bool>(
-                valueListenable: settingsController.audioOn,
-                builder: (context, audioOn, child) {
-                  return IconButton(
-                    onPressed: () => settingsController.toggleAudioOn(),
-                    icon: Icon(audioOn ? Icons.volume_up : Icons.volume_off),
-                  );
-                },
-              ),
-            ),
-            _gap,
             TextField(
-              controller: _lobbyController,
+              controller: _lobbyIdController,
               decoration: InputDecoration(
                 labelText: 'Enter Lobby ID',
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.search),
-                  onPressed: _joinLobby,
-                ),
+                errorText: _errorMessage,
               ),
             ),
-            _gap,
-            if (_errorMessage.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  _errorMessage,
-                  style: TextStyle(color: Colors.red),
-                ),
-              ),
-            _gap,
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () async {
+                final lobbyId = _lobbyIdController.text.trim();
+                if (lobbyId.isNotEmpty) {
+                  await _joinLobby(lobbyId);
+                } else {
+                  setState(() {
+                    _errorMessage = 'Lobby ID cannot be empty';
+                  });
+                }
+              },
+              child: const Text('Join Lobby'),
+            ),
+            const SizedBox(height: 32),
+            const Text(
+              'Available Lobbies:',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
             Expanded(
-              child: _lobbies.isEmpty
-                  ? Center(child: CircularProgressIndicator())
-                  : ListView.builder(
-                itemCount: _lobbies.length,
+              child: ListView.builder(
+                itemCount: lobbies.length,
                 itemBuilder: (context, index) {
+                  final lobby = lobbies[index];
+                  final lobbyId = lobby['id'];
                   return ListTile(
-                    title: Text(_lobbies[index]),
-                    onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Joining lobby ${_lobbies[index]}')),
-                      );
+                    title: Text('Lobby ID: $lobbyId'),
+                    onTap: () async {
+                      await _joinLobby(lobbyId);
                     },
                   );
                 },
@@ -156,6 +126,4 @@ class _PlayScreenState extends State<PlayScreen> {
       ),
     );
   }
-
-  static const _gap = SizedBox(height: 10);
 }

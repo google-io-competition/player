@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:player/style/themed_button.dart';
 import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:logging/logging.dart';
 
+import '../multiplayer/firestore_controller.dart';
 import '../settings/settings.dart';
 import '../style/audio/audio_controller.dart';
 import '../style/audio/sounds.dart';
 import '../style/pallette.dart';
+import '../style/themed_button.dart';
 import '../style/themed_screen.dart';
 
 class MainMenuScreen extends StatelessWidget {
@@ -17,6 +20,9 @@ class MainMenuScreen extends StatelessWidget {
     final palette = context.watch<Palette>();
     final settingsController = context.watch<SettingsController>();
     final audioController = context.watch<AudioController>();
+    final boardState = BoardState(element: BoardElement(text: '', duration: 0));  // Initialize with default values
+    final firestoreController = FirestoreController(instance: FirebaseFirestore.instance, boardState: boardState);
+    final Logger log = Logger('MainMenuScreen');
 
     return Scaffold(
       backgroundColor: palette.backgroundMain,
@@ -43,9 +49,21 @@ class MainMenuScreen extends StatelessWidget {
             ),
             _gap,
             ThemedButton(
-              onPressed: () {
+              onPressed: () async {
                 audioController.playSfx(SfxType.buttonTap);
-                GoRouter.of(context).go('/host');
+                try {
+                  log.info('Attempting to create a lobby');
+                  final lobbyRef = await firestoreController.createLobby();
+                  log.info('Navigating to lobby with ID: ${lobbyRef.id}');
+
+                  final userName = settingsController.displayName.value;
+                  GoRouter.of(context).go('/lobby/${lobbyRef.id}', extra: userName);
+                } catch (e) {
+                  log.severe('Failed to create lobby: $e');
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Failed to create lobby: $e')),
+                  );
+                }
               },
               child: const Text('Host'),
             ),

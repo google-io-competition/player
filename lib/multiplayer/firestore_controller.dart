@@ -1,130 +1,189 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
-
 
 class FirestoreController {
   static final _log = Logger('FirestoreController');
 
   final FirebaseFirestore instance;
-
   final BoardState boardState;
 
   /// For now, there is only one match. But in order to be ready
   /// for match-making, put it in a Firestore collection called matches.
-  late final _matchRef = instance.collection('matches').doc('match_1');
+  late final _matchRef = instance.collection('lobbies').doc('match_1');
 
-  late final _areaOneRef = _matchRef
-      .collection('areas')
-      .doc('area_one')
-      .withConverter<List<PlayingCard>>(
-      fromFirestore: _cardsFromFirestore, toFirestore: _cardsToFirestore);
+  late final _boardRef = _matchRef
+      .collection('board')
+      .doc('current_state')
+      .withConverter<BoardElement>(
+      fromFirestore: _elementFromFirestore, toFirestore: _elementToFirestore);
 
-  StreamSubscription? _areaOneFirestoreSubscription;
-  StreamSubscription? _areaTwoFirestoreSubscription;
-
-  StreamSubscription? _areaOneLocalSubscription;
-  StreamSubscription? _areaTwoLocalSubscription;
+  StreamSubscription? _boardFirestoreSubscription;
+  StreamSubscription? _boardLocalSubscription;
 
   FirestoreController({required this.instance, required this.boardState}) {
     // Subscribe to the remote changes (from Firestore).
-    _areaOneFirestoreSubscription = _areaOneRef.snapshots().listen((snapshot) {
-      _updateLocalFromFirestore(boardState.areaOne, snapshot);
-    });
-    _areaTwoFirestoreSubscription = _areaTwoRef.snapshots().listen((snapshot) {
-      _updateLocalFromFirestore(boardState.areaTwo, snapshot);
+    _boardFirestoreSubscription = _boardRef.snapshots().listen((snapshot) {
+      _updateLocalFromFirestore(boardState, snapshot);
     });
 
-    // Subscribe to the local changes in game state.
-    _areaOneLocalSubscription = boardState.areaOne.playerChanges.listen((_) {
-      _updateFirestoreFromLocalAreaOne();
-    });
-    _areaTwoLocalSubscription = boardState.areaTwo.playerChanges.listen((_) {
-      _updateFirestoreFromLocalAreaTwo();
+    // Subscribe to the local changes in board state.
+    _boardLocalSubscription = boardState.elementChanges.listen((_) {
+      _updateFirestoreFromLocal();
     });
 
     _log.fine('Initialized');
   }
 
+  Future<DocumentReference> createLobby() async {
+    _log.info('Contacting firebase');
+
+    try {
+      _log.info('Polling lobbies: ');
+
+      final lobbyRef = instance.collection('lobbies').doc();
+      _log.info(lobbyRef.id);
+
+      await lobbyRef.set({
+        'createdAt': FieldValue.serverTimestamp()
+      });
+      _log.info('Lobby created with ID: ${lobbyRef.id}');
+      return lobbyRef;
+    } catch (e) {
+      _log.severe('Failed to create lobby: $e');
+      rethrow;
+    }
+  }
+
+  Future<DocumentSnapshot> joinLobby(String code) async {
+    final lobbyRef = instance.collection('lobbies').doc(code);
+    final snapshot = await lobbyRef.get();
+    if (!snapshot.exists) {
+      throw Exception('Lobby not found');
+    }
+    boardState.replaceWith(BoardElement.fromJson(snapshot.data()!['boardState']));
+    return snapshot;
+  }
+
   void dispose() {
-    _areaOneFirestoreSubscription?.cancel();
-    _areaTwoFirestoreSubscription?.cancel();
-    _areaOneLocalSubscription?.cancel();
-    _areaTwoLocalSubscription?.cancel();
+    _boardFirestoreSubscription?.cancel();
+    _boardLocalSubscription?.cancel();
 
     _log.fine('Disposed');
   }
 
   /// Takes the raw JSON snapshot coming from Firestore and attempts to
-  /// convert it into a list of [PlayingCard]s.
-  List<PlayingCard> _cardsFromFirestore(
+  /// convert it into a [BoardElement].
+  BoardElement _elementFromFirestore(
       DocumentSnapshot<Map<String, dynamic>> snapshot,
       SnapshotOptions? options,
       ) {
-    final data = snapshot.data()?['cards'] as List?;
+    final data = snapshot.data();
 
     if (data == null) {
-      _log.info('No data found on Firestore, returning empty list');
-      return [];
+      _log.info('No data found on Firestore, returning default element');
+      return BoardElement(text: '', duration: 0);
     }
 
-    final list = List.castFrom<Object?, Map<String, Object?>>(data);
-
     try {
-      return list.map((raw) => PlayingCard.fromJson(raw)).toList();
+      return BoardElement.fromJson(data);
     } catch (e) {
       throw FirebaseControllerException(
           'Failed to parse data from Firestore: $e');
     }
   }
 
-  /// Takes a list of [PlayingCard]s and converts it into a JSON object
+  /// Takes a [BoardElement] and converts it into a JSON object
   /// that can be saved into Firestore.
-  Map<String, Object?> _cardsToFirestore(
-      List<PlayingCard> cards,
+  Map<String, Object?> _elementToFirestore(
+      BoardElement element,
       SetOptions? options,
       ) {
-    return {'cards': cards.map((c) => c.toJson()).toList()};
+    return element.toJson();
   }
 
-  /// Updates Firestore with the local state of [area].
-  Future<void> _updateFirestoreFromLocal(
-      PlayingArea area, DocumentReference<List<PlayingCard>> ref) async {
+  /// Updates Firestore with the local state of the board.
+  Future<void> _updateFirestoreFromLocal() async {
     try {
-      _log.fine('Updating Firestore with local data (${area.cards}) ...');
-      await ref.set(area.cards);
+      _log.fine('Updating Firestore with local data (${boardState.element}) ...');
+      await _boardRef.set(boardState.element);
       _log.fine('... done updating.');
     } catch (e) {
       throw FirebaseControllerException(
-          'Failed to update Firestore with local data (${area.cards}): $e');
+          'Failed to update Firestore with local data (${boardState.element}): $e');
     }
   }
 
-  /// Sends the local state of `boardState.areaOne` to Firestore.
-  void _updateFirestoreFromLocalAreaOne() {
-    _updateFirestoreFromLocal(boardState.areaOne, _areaOneRef);
-  }
-
-  /// Sends the local state of `boardState.areaTwo` to Firestore.
-  void _updateFirestoreFromLocalAreaTwo() {
-    _updateFirestoreFromLocal(boardState.areaTwo, _areaTwoRef);
-  }
-
-  /// Updates the local state of [area] with the data from Firestore.
+  /// Updates the local state of the board with the data from Firestore.
   void _updateLocalFromFirestore(
-      PlayingArea area, DocumentSnapshot<List<PlayingCard>> snapshot) {
+      BoardState state, DocumentSnapshot<BoardElement> snapshot) {
     _log.fine('Received new data from Firestore (${snapshot.data()})');
 
-    final cards = snapshot.data() ?? [];
+    final element = snapshot.data();
 
-    if (listEquals(cards, area.cards)) {
+    if (element == null) {
       _log.fine('No change');
     } else {
-      _log.fine('Updating local data with Firestore data ($cards)');
-      area.replaceWith(cards);
+      _log.fine('Updating local data with Firestore data ($element)');
+      state.replaceWith(element);
     }
+  }
+  // Chat functionality
+  Stream<QuerySnapshot> getMessages(String lobbyId) {
+    return instance.collection('lobbies').doc(lobbyId).collection('messages').orderBy('timestamp').snapshots();
+  }
+
+  Future<void> sendMessage(String lobbyId, String message, String userId) async {
+    final messageRef = instance.collection('lobbies').doc(lobbyId).collection('messages').doc();
+    await messageRef.set({
+      'text': message,
+      'userId': userId,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+  }
+}
+
+class BoardElement {
+  String text;
+  int duration; // Duration in seconds
+
+  BoardElement({required this.text, required this.duration});
+
+  factory BoardElement.fromJson(Map<String, dynamic> json) {
+    return BoardElement(
+      text: json['text'] as String,
+      duration: json['duration'] as int,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'text': text,
+      'duration': duration,
+    };
+  }
+}
+class BoardState {
+  BoardElement element;
+  final StreamController<void> _elementChanges = StreamController<void>.broadcast();
+
+  Stream<void> get elementChanges => _elementChanges.stream;
+
+  BoardState({required this.element});
+
+  void updateElement(BoardElement newElement) {
+    element = newElement;
+    _elementChanges.add(null);
+  }
+
+  void replaceWith(BoardElement newElement) {
+    element = newElement;
+    _elementChanges.add(null);
+  }
+
+  Map<String, dynamic> toJson() {
+    return element.toJson();
   }
 }
 
