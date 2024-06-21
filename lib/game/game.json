@@ -1,0 +1,295 @@
+{
+  "author": "funalex",
+  "private": false,
+  "player": {
+    "displayName": true,
+    "useAvatars": false,
+    "avatarLocation": "none",
+    "points": 0
+  },
+  "colors": {
+    "primary": "#F44336",
+    "secondary": "#E91E63",
+    "tertiary": "#9C27B0",
+    "background": "#FFFFFF",
+    "text": "#000000"
+  },
+  "chat": {
+    "enabled": "lobby",
+    "private": "disabled"
+  },
+  "variables": {
+    "timer": {
+      "type": "number",
+      "value": 30
+    },
+    "questions": [
+      {
+        "type": "question-mc",
+        "reward": 1000,
+        "question": "When did the War of 1812 begin?",
+        "answers": ["A) 1810", "B) 1811", "C) 1812", "D) 1813"],
+        "correct": 3
+      },
+      {
+        "type": "question-mc",
+        "reward": 1500,
+        "question": "Which country did the United States fight in the War of 1812?",
+        "answers": ["A) France", "B) Spain", "C) Mexico", "D) Great Britain"],
+        "correct": 4
+      },
+      {
+        "type": "question-mc",
+        "reward": 2000,
+        "question": "What was a major cause of the War of 1812?",
+        "answers": ["A) Trade restrictions", "B) Border disputes with Canada", "C) Slavery issues", "D) Land expansion"],
+        "correct": 1
+      }
+    ]
+  },
+  "states": [
+    {
+      "duration": 30,
+      "description": "question #1",
+      "background": "background",
+      "variables": [
+        {
+          "name": "question",
+          "type": "string",
+          "value": "content[0]"
+        }
+      ],
+      "elements": [
+        {
+          "type": "text",
+          "text": "Question #1",
+          "position": {
+            "anchor": "topLeftCenter",
+            "x": 0,
+            "y": -20
+          }
+        },
+        {
+          "type": "text",
+          "text": "{{question}}",
+          "position": {
+            "anchor": "center",
+            "x": 0,
+            "y": 10
+          }
+        },
+        {
+          "type": "text",
+          "text": "{{timer}}",
+          "position": {
+            "anchor": "topRight",
+            "x": 10,
+            "y": -20
+          }
+        },
+        {
+          "type": "button",
+          "text": "{{answers[0]}}",
+          "color": "primary",
+          "position": {
+            "anchor": "bottomLeft",
+            "x": -10,
+            "y": -10
+          }
+        },
+        {
+          "type": "button",
+          "text": "{{answers[1]}}",
+          "color": "secondary",
+          "position": {
+            "anchor": "bottomRight",
+            "x": 10,
+            "y": -10
+          }
+        },
+        {
+          "type": "button",
+          "text": "{{answers[2]}}",
+          "color": "tertiary",
+          "position": {
+            "anchor": "bottomLeft",
+            "x": -10,
+            "y": -30
+          }
+        },
+        {
+          "type": "button",
+          "text": "{{answers[3]}}",
+          "color": "quaternary",
+          "position": {
+            "anchor": "bottomRight",
+            "x": 10,
+            "y": -30
+          }
+        }
+      ]
+    },
+    {
+      "duration": 30,
+      "description": "question #2",
+      "background": "background",
+      "variables": [
+        {
+          "name": "question",
+          "type": "string",
+          "value": "content[1]"
+        }
+      ],
+      "elements": [
+        {
+          "type": "text",
+          "text": "Question #2",
+          "position": {
+            "anchor": "topLeftCenter",
+            "x": 0,
+            "y": -20
+          }
+        },
+        {
+          "type": "text",
+          "text": "{{question}}",
+          "position": {
+            "anchor": "center",
+            "x": 0,
+            "y": 10
+          }
+        },
+        {
+          "type": "text",
+          "text": "{{timer}}",
+          "position": {
+            "anchor": "topRight",
+            "x": 10,
+            "y": -20
+          }
+        },
+        {
+          "type": "button",
+          "text": "{{answers[0]}}",
+          "color": "primary",
+          "position": {
+            "anchor": "bottomLeft",
+            "x": -10,
+            "y": -10
+          }
+        },
+        {
+          "type": "button",
+          "text": "{{answers[1]}}",
+          "color": "secondary",
+          "position": {
+            "anchor": "bottomRight",
+            "x": 10,
+            "y": -10
+          }
+        },
+        {
+          "type": "button",
+          "text": "{{answers[2]}}",
+          "color": "tertiary",
+          "position": {
+            "anchor": "bottomLeft",
+            "x": -10,
+            "y": -30
+          }
+        },
+        {
+          "type": "button",
+          "text": "{{answers[3]}}",
+          "color": "quaternary",
+          "position": {
+            "anchor": "bottomRight",
+            "x": 10,
+            "y": -30
+          }
+        }
+      ]
+    },
+    {
+      "duration": 30,
+      "description": "question #3",
+      "background": "background",
+      "variables": [
+        {
+          "name": "question",
+          "type": "string",
+          "value": "content[2]"
+        }
+      ],
+      "elements": [
+        {
+          "type": "text",
+          "text": "Question #3",
+          "position": {
+            "anchor": "topLeftCenter",
+            "x": 0,
+            "y": -20
+          }
+        },
+        {
+          "type": "text",
+          "text": "{{question}}",
+          "position": {
+            "anchor": "center",
+            "x": 0,
+            "y": 10
+          }
+        },
+        {
+          "type": "text",
+          "text": "{{timer}}",
+          "position": {
+            "anchor": "topRight",
+            "x": 10,
+            "y": -20
+          }
+        },
+        {
+          "type": "button",
+          "text": "{{answers[0]}}",
+          "color": "primary",
+          "position": {
+            "anchor": "bottomLeft",
+            "x": -10,
+            "y": -10
+          }
+        },
+        {
+          "type": "button",
+          "text": "{{answers[1]}}",
+          "color": "secondary",
+          "position": {
+            "anchor": "bottomRight",
+            "x": 10,
+            "y": -10
+          }
+        },
+        {
+          "type": "button",
+          "text": "{{answers[2]}}",
+          "color": "tertiary",
+          "position": {
+            "anchor": "bottomLeft",
+            "x": -10,
+            "y": -30
+          }
+        },
+        {
+          "type": "button",
+          "text": "{{answers[3]}}",
+          "color": "quaternary",
+          "position": {
+            "anchor": "bottomRight",
+            "x": 10,
+            "y": -30
+          }
+        }
+      ]
+    }
+  ]
+}
