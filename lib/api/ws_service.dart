@@ -26,10 +26,14 @@ class WebSocketService extends ChangeNotifier {
   List<String> chatMessages = [];
   Map<String, List<String>> dms = {};
 
-  void connect(String lobbyId, String displayName, Function(String) onMessage) {
+  late Function onGameStart;
+  late Function onGameEnd;
+
+  void connect(String lobbyId, String displayName, Function(String) onMessage, Function onGameStart) {
     _channel = WebSocketChannel.connect(
       Uri.parse('ws://localhost:8080/ws/lobby'),
     );
+    this.onGameStart = onGameStart;
 
     // Create the CONNECT message
     var connectMessage = jsonEncode({
@@ -111,10 +115,10 @@ class WebSocketService extends ChangeNotifier {
         notifyListeners();
         break;
       case MessageType.START_GAME:
-        print('Game started');
+        onGameStart();
         break;
       case MessageType.END_GAME:
-        print('Game ended');
+        onGameEnd();
         break;
       case MessageType.CUSTOM:
       // Handle custom messages

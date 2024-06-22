@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:player/palette.dart';
 import 'package:player/screens/home.dart';
 
 void main() => runApp(const MyApp());
@@ -10,9 +11,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'PLAY\'r Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
       home: HomeScreen(),
     );
   }

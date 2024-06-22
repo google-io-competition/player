@@ -19,8 +19,6 @@ import 'package:flutter/material.dart';
 /// we could allow players to customize colors, for example,
 /// or even get the colors from the network.
 class Palette {
-  Color get pen => const Color(0xff1d75fb);
-  Color get darkPen => const Color(0xFF0050bc);
-  Color get ink => const Color(0xee352b42);
-  Color get backgroundMain => const Color(0xff000311);
+  static Color titleColor = const Color(0xFFFFFFFF);
+  static Color primaryColor = const Color(0xFF0057FF);
 }

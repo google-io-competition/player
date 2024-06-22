@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../api/ws_service.dart';
 import '../widgets/message_input.dart';
+import 'game.dart';
 
 class LobbyScreen extends StatefulWidget {
   final String lobbyId;
@@ -26,9 +27,22 @@ class _LobbyScreenState extends State<LobbyScreen> {
   }
 
   void connectWebSocket() {
-    _webSocketService.connect(widget.lobbyId, widget.displayName, (message) {
-      // Handle any additional actions on message received
-    });
+    _webSocketService.connect(
+      widget.lobbyId,
+      widget.displayName,
+          (message) {
+        print('Message received: $message');
+      },
+          () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => GameScreen(), // Navigate to the game screen
+          ),
+        );
+      },
+    );
+
   }
 
   @override

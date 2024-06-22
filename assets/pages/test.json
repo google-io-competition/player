@@ -1,0 +1,29 @@
+{
+  "type": "scaffold",
+  "args": {
+    "appBar": {
+      "type": "app_bar",
+      "args": {
+        "title": {
+          "type": "text",
+          "args": {
+            "text": "List of English words"
+          }
+        },
+        "actions": [
+        ]
+      }
+    },
+    "body": {
+      "type": "center",
+      "args": {
+        "child": {
+          "type": "circular_progress_indicator",
+          "args": {
+            "valueColor": "#f00"
+          }
+        }
+      }
+    }
+  }
+}
