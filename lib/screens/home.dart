@@ -43,15 +43,16 @@ class _HomeScreenState extends State<HomeScreen> {
       final lobbyId = _generateRandomLobbyId();
       try {
         print('Creating lobby $lobbyId');
-        await ApiService().createLobby(lobbyId).then((_) => {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      LobbyScreen(lobbyId: lobbyId, displayName: displayName),
-                ),
-              )
-            });
+        await ApiService().createLobby(lobbyId).then((_) =>
+        {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  LobbyScreen(lobbyId: lobbyId, displayName: displayName),
+            ),
+          )
+        });
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to create lobby: $e')),
@@ -80,23 +81,27 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              const SizedBox(height: 55),
-              SvgPicture.asset('assets/icon.svg', height: 200, width: 150),
-              const SizedBox(height: 55),
-              Text(
-                'PLAY\'r',
-                style: TextStyle(
-                  color: Palette.titleColor,
-                  fontSize: 60,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Itim',
-                ),
-                textAlign: TextAlign.left,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          textDirection: TextDirection.ltr,
+          children: <Widget>[
+            const SizedBox(height: 55),
+            SvgPicture.asset('assets/icon.svg', height: 200, width: 150),
+            const SizedBox(height: 55),
+            Text(
+              'PLAY\'r',
+              style: TextStyle(
+                color: Palette.titleColor,
+                fontSize: 60,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Itim',
               ),
-              const SizedBox(height: 55),
-              Text(
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 55),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
                 'ROOM CODE',
                 style: TextStyle(
                   fontFamily: 'Itim',
@@ -105,33 +110,37 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 textAlign: TextAlign.left,
               ),
-              const SizedBox(height: 7.5),
-              TextField(
-                controller: _lobbyIdController,
-                style: TextStyle(
+            ),
+            const SizedBox(height: 7.5),
+            TextField(
+              controller: _lobbyIdController,
+              style: TextStyle(
+                fontFamily: 'Itim',
+                fontSize: 20,
+                color: Palette.titleColor,
+              ),
+              decoration: InputDecoration(
+                hintText: 'aJ2rT',
+                hintStyle: TextStyle(
                   fontFamily: 'Itim',
                   fontSize: 20,
-                  color: Palette.titleColor,
+                  color: Palette.titleColor.withOpacity(0.5),
                 ),
-                decoration: InputDecoration(
-                    hintText: 'aJ2rT',
-                    hintStyle: TextStyle(
-                      fontFamily: 'Itim',
-                      fontSize: 20,
-                      color: Palette.titleColor.withOpacity(0.5),
-                    ),
-                    filled: true,
-                    fillColor: Colors.black.withOpacity(0.1),
-                    border: const OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                      gapPadding: 1,
-                      borderSide: BorderSide(color: Colors.white),
-                    )),
-                cursorColor: Colors.white,
-                textAlign: TextAlign.left,
+                filled: true,
+                fillColor: Colors.black.withOpacity(0.1),
+                border: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                  gapPadding: 1,
+                  borderSide: BorderSide(color: Colors.white),
+                ),
               ),
-              const SizedBox(height: 20),
-              Text(
+              cursorColor: Colors.white,
+              textAlign: TextAlign.left,
+            ),
+            const SizedBox(height: 20),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
                 'DISPLAY NAME',
                 style: TextStyle(
                   fontFamily: 'Itim',
@@ -140,119 +149,137 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 textAlign: TextAlign.left,
               ),
-              const SizedBox(height: 7.5),
-              TextField(
-                controller: _displayNameController,
-                style: TextStyle(
+            ),
+            const SizedBox(height: 7.5),
+            TextField(
+              controller: _displayNameController,
+              style: TextStyle(
+                fontFamily: 'Itim',
+                fontSize: 20,
+                color: Palette.titleColor,
+              ),
+              decoration: InputDecoration(
+                hintText: 'Name',
+                hintStyle: TextStyle(
                   fontFamily: 'Itim',
                   fontSize: 20,
-                  color: Palette.titleColor,
+                  color: Palette.titleColor.withOpacity(0.5),
                 ),
-                decoration: InputDecoration(
-                    hintText: 'Name',
-                    hintStyle: TextStyle(
-                      fontFamily: 'Itim',
-                      fontSize: 20,
-                      color: Palette.titleColor.withOpacity(0.5),
-                    ),
-                    filled: true,
-                    fillColor: Colors.black.withOpacity(0.1),
-                    border: const OutlineInputBorder(
-                      gapPadding: 1,
-                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                      borderSide: BorderSide(color: Colors.white)
-                    )),
-                cursorColor: Colors.white,
-                textAlign: TextAlign.left,
+                filled: true,
+                fillColor: Colors.black.withOpacity(0.1),
+                border: const OutlineInputBorder(
+                  gapPadding: 1,
+                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                  borderSide: BorderSide(color: Colors.white),
+                ),
               ),
-              const SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: _createLobby,
-                style: ButtonStyle(
-                  backgroundColor:
+              cursorColor: Colors.white,
+              textAlign: TextAlign.left,
+            ),
+            const SizedBox(height: 30),
+            Center(
+              child: Column(
+                children: [
+                  ElevatedButton(
+                    onPressed: _createLobby,
+                    style: ButtonStyle(
+                      backgroundColor:
                       WidgetStateProperty.all(Colors.black.withOpacity(0.1)),
-                  fixedSize: WidgetStateProperty.all(
-                    Size(
-                      MediaQuery.of(context).size.width * 0.8,
-                      50,
-                    ),
-                  ),
-                  shape: MaterialStateProperty.all(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                  ),
-                  foregroundColor:
+                      fixedSize: WidgetStateProperty.all(
+                        Size(
+                          MediaQuery
+                              .of(context)
+                              .size
+                              .width * 0.8,
+                          50,
+                        ),
+                      ),
+                      shape: MaterialStateProperty.all(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                      ),
+                      foregroundColor:
                       MaterialStateProperty.all(Palette.titleColor),
-                ),
-                child: const Text(
-                  'Join Game',
-                  style: TextStyle(
-                    fontFamily: 'Itim',
-                    fontSize: 20,
+                    ),
+                    child: const Text(
+                      'Join Game',
+                      style: TextStyle(
+                        fontFamily: 'Itim',
+                        fontSize: 20,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-                  textAlign: TextAlign.left,
-                ),
-              ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: _createLobby,
-                style: ButtonStyle(
-                  backgroundColor:
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: _createLobby,
+                    style: ButtonStyle(
+                      backgroundColor:
                       WidgetStateProperty.all(Colors.black.withOpacity(0.1)),
-                  fixedSize: WidgetStateProperty.all(
-                    Size(
-                      MediaQuery.of(context).size.width * 0.8,
-                      50,
-                    ),
-                  ),
-                  shape: MaterialStateProperty.all(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                  ),
-                  foregroundColor:
+                      fixedSize: WidgetStateProperty.all(
+                        Size(
+                          MediaQuery
+                              .of(context)
+                              .size
+                              .width * 0.8,
+                          50,
+                        ),
+                      ),
+                      shape: MaterialStateProperty.all(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                      ),
+                      foregroundColor:
                       MaterialStateProperty.all(Palette.titleColor),
-                ),
-                child: const Text(
-                  'Host Game',
-                  style: TextStyle(
-                    fontFamily: 'Itim',
-                    fontSize: 20,
+                    ),
+                    child: const Text(
+                      'Host Game',
+                      style: TextStyle(
+                        fontFamily: 'Itim',
+                        fontSize: 20,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-                  textAlign: TextAlign.left,
-                ),
-              ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: _createLobby,
-                style: ButtonStyle(
-                  backgroundColor:
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: _createLobby,
+                    style: ButtonStyle(
+                      backgroundColor:
                       WidgetStateProperty.all(Colors.black.withOpacity(0.1)),
-                  fixedSize: WidgetStateProperty.all(
-                    Size(
-                      MediaQuery.of(context).size.width * 0.8,
-                      50,
-                    ),
-                  ),
-                  shape: MaterialStateProperty.all(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                  ),
-                  foregroundColor:
+                      fixedSize: WidgetStateProperty.all(
+                        Size(
+                          MediaQuery
+                              .of(context)
+                              .size
+                              .width * 0.8,
+                          50,
+                        ),
+                      ),
+                      shape: MaterialStateProperty.all(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                      ),
+                      foregroundColor:
                       MaterialStateProperty.all(Palette.titleColor),
-                ),
-                child: const Text(
-                  'Create Game',
-                  style: TextStyle(
-                    fontFamily: 'Itim',
-                    fontSize: 20,
+                    ),
+                    child: const Text(
+                      'Create Game',
+                      style: TextStyle(
+                        fontFamily: 'Itim',
+                        fontSize: 20,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-                  textAlign: TextAlign.left,
-                ),
+                ],
               ),
-            ]),
+            ),
+          ],
+        ),
       ),
     );
   }
