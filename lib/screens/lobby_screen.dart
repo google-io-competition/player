@@ -30,10 +30,10 @@ class _LobbyScreenState extends State<LobbyScreen> {
     _webSocketService.connect(
       widget.lobbyId,
       widget.displayName,
-          (message) {
+      (message) {
         print('Message received: $message');
       },
-          () {
+      () {
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -42,7 +42,6 @@ class _LobbyScreenState extends State<LobbyScreen> {
         );
       },
     );
-
   }
 
   @override

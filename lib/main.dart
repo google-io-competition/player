@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:player/palette.dart';
 import 'package:player/screens/home.dart';
 
 void main() => runApp(const MyApp());

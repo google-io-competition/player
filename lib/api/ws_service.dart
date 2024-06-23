@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -29,7 +30,8 @@ class WebSocketService extends ChangeNotifier {
   late Function onGameStart;
   late Function onGameEnd;
 
-  void connect(String lobbyId, String displayName, Function(String) onMessage, Function onGameStart) {
+  void connect(String lobbyId, String displayName, Function(String) onMessage,
+      Function onGameStart) {
     _channel = WebSocketChannel.connect(
       Uri.parse('ws://localhost:8080/ws/lobby'),
     );
@@ -100,7 +102,7 @@ class WebSocketService extends ChangeNotifier {
   void handleMessage(String message) {
     var jsonMessage = jsonDecode(message);
     var type = MessageType.values.firstWhere(
-            (value) => value.toString() == 'MessageType.${jsonMessage['type']}');
+        (value) => value.toString() == 'MessageType.${jsonMessage['type']}');
 
     switch (type) {
       case MessageType.CONNECT:
@@ -121,7 +123,7 @@ class WebSocketService extends ChangeNotifier {
         onGameEnd();
         break;
       case MessageType.CUSTOM:
-      // Handle custom messages
+        // Handle custom messages
         break;
       case MessageType.TEXT:
         var textPayload = jsonMessage['payload'] as Map<String, dynamic>;

@@ -31,7 +31,9 @@ class _HomeScreenState extends State<HomeScreen> {
     } else {
       // Show error if inputs are empty
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please enter both Lobby ID and Display Name')),
+        const SnackBar(
+            content:
+                Text('Please enter both the Room Code and a Display Name')),
       );
     }
   }
@@ -43,16 +45,15 @@ class _HomeScreenState extends State<HomeScreen> {
       final lobbyId = _generateRandomLobbyId();
       try {
         print('Creating lobby $lobbyId');
-        await ApiService().createLobby(lobbyId).then((_) =>
-        {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) =>
-                  LobbyScreen(lobbyId: lobbyId, displayName: displayName),
-            ),
-          )
-        });
+        await ApiService().createLobby(lobbyId).then((_) => {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      LobbyScreen(lobbyId: lobbyId, displayName: displayName),
+                ),
+              )
+            });
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to create lobby: $e')),
@@ -183,14 +184,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   ElevatedButton(
                     onPressed: _createLobby,
                     style: ButtonStyle(
-                      backgroundColor:
-                      WidgetStateProperty.all(Colors.black.withOpacity(0.1)),
+                      backgroundColor: WidgetStateProperty.all(
+                          Colors.black.withOpacity(0.1)),
                       fixedSize: WidgetStateProperty.all(
                         Size(
-                          MediaQuery
-                              .of(context)
-                              .size
-                              .width * 0.8,
+                          MediaQuery.of(context).size.width * 0.8,
                           50,
                         ),
                       ),
@@ -200,7 +198,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       foregroundColor:
-                      MaterialStateProperty.all(Palette.titleColor),
+                          MaterialStateProperty.all(Palette.titleColor),
                     ),
                     child: const Text(
                       'Join Game',
@@ -215,14 +213,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   ElevatedButton(
                     onPressed: _createLobby,
                     style: ButtonStyle(
-                      backgroundColor:
-                      WidgetStateProperty.all(Colors.black.withOpacity(0.1)),
+                      backgroundColor: WidgetStateProperty.all(
+                          Colors.black.withOpacity(0.1)),
                       fixedSize: WidgetStateProperty.all(
                         Size(
-                          MediaQuery
-                              .of(context)
-                              .size
-                              .width * 0.8,
+                          MediaQuery.of(context).size.width * 0.8,
                           50,
                         ),
                       ),
@@ -232,7 +227,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       foregroundColor:
-                      MaterialStateProperty.all(Palette.titleColor),
+                          MaterialStateProperty.all(Palette.titleColor),
                     ),
                     child: const Text(
                       'Host Game',
@@ -247,14 +242,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   ElevatedButton(
                     onPressed: _createLobby,
                     style: ButtonStyle(
-                      backgroundColor:
-                      WidgetStateProperty.all(Colors.black.withOpacity(0.1)),
+                      backgroundColor: WidgetStateProperty.all(
+                          Colors.black.withOpacity(0.1)),
                       fixedSize: WidgetStateProperty.all(
                         Size(
-                          MediaQuery
-                              .of(context)
-                              .size
-                              .width * 0.8,
+                          MediaQuery.of(context).size.width * 0.8,
                           50,
                         ),
                       ),
@@ -264,7 +256,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       foregroundColor:
-                      MaterialStateProperty.all(Palette.titleColor),
+                          MaterialStateProperty.all(Palette.titleColor),
                     ),
                     child: const Text(
                       'Create Game',

@@ -28,21 +28,36 @@
         "type": "question-mc",
         "reward": 1000,
         "question": "When did the War of 1812 begin?",
-        "answers": ["A) 1810", "B) 1811", "C) 1812", "D) 1813"],
+        "answers": [
+          "A) 1810",
+          "B) 1811",
+          "C) 1812",
+          "D) 1813"
+        ],
         "correct": 3
       },
       {
         "type": "question-mc",
         "reward": 1500,
         "question": "Which country did the United States fight in the War of 1812?",
-        "answers": ["A) France", "B) Spain", "C) Mexico", "D) Great Britain"],
+        "answers": [
+          "A) France",
+          "B) Spain",
+          "C) Mexico",
+          "D) Great Britain"
+        ],
         "correct": 4
       },
       {
         "type": "question-mc",
         "reward": 2000,
         "question": "What was a major cause of the War of 1812?",
-        "answers": ["A) Trade restrictions", "B) Border disputes with Canada", "C) Slavery issues", "D) Land expansion"],
+        "answers": [
+          "A) Trade restrictions",
+          "B) Border disputes with Canada",
+          "C) Slavery issues",
+          "D) Land expansion"
+        ],
         "correct": 1
       }
     ]

@@ -19,7 +19,8 @@ class _AppLifecycleObserverState extends State<AppLifecycleObserver> {
   void initState() {
     super.initState();
     lifecycleNotifier = ValueNotifier(AppLifecycleState.inactive);
-    WidgetsBinding.instance.addObserver(LifecycleEventHandler(lifecycleNotifier));
+    WidgetsBinding.instance
+        .addObserver(LifecycleEventHandler(lifecycleNotifier));
   }
 
   @override
@@ -32,7 +33,8 @@ class _AppLifecycleObserverState extends State<AppLifecycleObserver> {
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(LifecycleEventHandler(lifecycleNotifier));
+    WidgetsBinding.instance
+        .removeObserver(LifecycleEventHandler(lifecycleNotifier));
     super.dispose();
   }
 }
