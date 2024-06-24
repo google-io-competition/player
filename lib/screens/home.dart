@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:player/screens/game_library.dart';
 
 import '../api/api_service.dart';
 import '../palette.dart';
@@ -39,32 +40,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _createLobby() async {
-    final displayName = _displayNameController.text;
-
-    if (displayName.isNotEmpty) {
-      final lobbyId = _generateRandomLobbyId();
-      try {
-        print('Creating lobby $lobbyId');
-        await ApiService().createLobby(lobbyId).then((_) => {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      LobbyScreen(lobbyId: lobbyId, displayName: displayName),
-                ),
-              )
-            });
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to create lobby: $e')),
-        );
-      }
-    } else {
-      // Show error if display name is empty
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please enter a Display Name')),
-      );
-    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+        const GameLibraryScreen(),
+      ),
+    );
   }
 
   String _generateRandomLobbyId() {
@@ -87,19 +69,19 @@ class _HomeScreenState extends State<HomeScreen> {
           textDirection: TextDirection.ltr,
           children: <Widget>[
             const SizedBox(height: 55),
-            SvgPicture.asset('assets/icon.svg', height: 200, width: 150),
-            const SizedBox(height: 55),
+            SvgPicture.asset('assets/icon.svg', height: 75, width: 40),
+            const SizedBox(height: 35),
             Text(
               'PLAY\'r',
               style: TextStyle(
                 color: Palette.titleColor,
-                fontSize: 60,
+                fontSize: 50,
                 fontWeight: FontWeight.bold,
                 fontFamily: 'Itim',
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 55),
+            const SizedBox(height: 35),
             Align(
               alignment: Alignment.centerLeft,
               child: Text(
@@ -138,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
               cursorColor: Colors.white,
               textAlign: TextAlign.left,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 15),
             Align(
               alignment: Alignment.centerLeft,
               child: Text(
@@ -177,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
               cursorColor: Colors.white,
               textAlign: TextAlign.left,
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 25),
             Center(
               child: Column(
                 children: [
@@ -209,7 +191,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       textAlign: TextAlign.center,
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 7.5),
                   ElevatedButton(
                     onPressed: _createLobby,
                     style: ButtonStyle(
@@ -238,7 +220,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       textAlign: TextAlign.center,
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 7.5),
                   ElevatedButton(
                     onPressed: _createLobby,
                     style: ButtonStyle(
