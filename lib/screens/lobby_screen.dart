@@ -3,13 +3,12 @@ import 'package:provider/provider.dart';
 
 import '../api/ws_service.dart';
 import '../widgets/message_input.dart';
-import 'game.dart';
 
 class LobbyScreen extends StatefulWidget {
   final String lobbyId;
   final String displayName;
 
-  LobbyScreen({required this.lobbyId, required this.displayName});
+  LobbyScreen({super.key, required this.lobbyId, required this.displayName});
 
   @override
   _LobbyScreenState createState() => _LobbyScreenState();
@@ -34,12 +33,6 @@ class _LobbyScreenState extends State<LobbyScreen> {
         print('Message received: $message');
       },
       () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => GameScreen(), // Navigate to the game screen
-          ),
-        );
       },
     );
   }

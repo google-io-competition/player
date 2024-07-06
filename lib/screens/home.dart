@@ -3,9 +3,11 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:player/screens/game_library.dart';
+import 'package:player/screens/game_test.dart';
 
 import '../api/api_service.dart';
 import '../palette.dart';
+import 'editor.dart';
 import 'lobby_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -32,9 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
     } else {
       // Show error if inputs are empty
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content:
-                Text('Please enter both the Room Code and a Display Name')),
+        const SnackBar(content: Text('Please enter both the Room Code and a Display Name')),
       );
     }
   }
@@ -45,6 +45,16 @@ class _HomeScreenState extends State<HomeScreen> {
       MaterialPageRoute(
         builder: (context) =>
         const GameLibraryScreen(),
+      ),
+    );
+  }
+
+  void _createGame() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+        const EditorScreen(),
       ),
     );
   }
@@ -222,7 +232,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 7.5),
                   ElevatedButton(
-                    onPressed: _createLobby,
+                    onPressed: _createGame,
                     style: ButtonStyle(
                       backgroundColor: WidgetStateProperty.all(
                           Colors.black.withOpacity(0.1)),

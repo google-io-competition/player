@@ -4,6 +4,7 @@ import '../api/api_service.dart';
 import '../game/game_models.dart';
 import '../palette.dart';
 import '../widgets/game_card.dart';
+import '../widgets/game_screen.dart';
 import 'home.dart';
 
 class GameLibraryScreen extends StatefulWidget {
@@ -17,7 +18,7 @@ class _GameLibraryScreenState extends State<GameLibraryScreen> {
   final TextEditingController _searchBarController = TextEditingController();
   final ApiService apiService = ApiService();
   int currentPage = 1;
-  List<File> files = [];
+  List<GameFile> files = [];
   bool isLoading = false;
   bool hasMore = true;
   int? selectedGameIndex;
@@ -221,8 +222,8 @@ class _GameLibraryScreenState extends State<GameLibraryScreen> {
                 ElevatedButton(
                   onPressed: hasMore ? loadNextPage : null,
                   style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                          (Set<MaterialState> states) {
+                    backgroundColor: WidgetStateProperty.resolveWith<Color>(
+                          (Set<WidgetState> states) {
                         if (!hasMore) {
                           return Colors.black
                               .withOpacity(0.05); // Less opaque when disabled
@@ -237,13 +238,13 @@ class _GameLibraryScreenState extends State<GameLibraryScreen> {
                         50,
                       ),
                     ),
-                    shape: MaterialStateProperty.all(
+                    shape: WidgetStateProperty.all(
                       RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                     ),
                     foregroundColor:
-                    MaterialStateProperty.all(Palette.titleColor),
+                    WidgetStateProperty.all(Palette.titleColor),
                   ),
                   child: const Text(
                     'Next Page',
@@ -260,7 +261,15 @@ class _GameLibraryScreenState extends State<GameLibraryScreen> {
             ElevatedButton(
               onPressed: selectedGameIndex != null
                   ? () {
-                // Your host game logic here
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => GameScreen(
+                      game: files[selectedGameIndex!],
+                      screen: files[selectedGameIndex!].content.screens.entries.first.key,
+                    ),
+                  ),
+                );
               }
                   : null,
               style: ButtonStyle(

@@ -1,0 +1,16 @@
+{
+  "type": "scaffold",
+  "args": {
+    "body": {
+      "type": "center",
+      "args": {
+        "child": {
+          "type": "text",
+          "args": {
+            "text": "Type something to get started!"
+          }
+        }
+      }
+    }
+  }
+}

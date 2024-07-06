@@ -7,7 +7,7 @@
         "title": {
           "type": "text",
           "args": {
-            "text": "List of English words"
+            "text": "Type something to get started!"
           }
         },
         "actions": [

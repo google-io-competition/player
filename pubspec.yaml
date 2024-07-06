@@ -44,6 +44,9 @@ dependencies:
   cupertino_icons: ^1.0.6
   json_dynamic_widget: ^7.2.0+5
   flutter_svg: ^2.0.10+1
+  device_preview: ^1.2.0
+  device_frame: ^1.2.0
+  flutter_secure_storage: ^5.0.2
 
 dev_dependencies:
   flutter_test:
@@ -76,7 +79,7 @@ flutter:
     - icon/button.png
     - assets/icon.svg
     - assets/imposter.json
-    - assets/pages/test.json
+    - assets/pages/home.json
 
   # To add assets to your application, add an assets section, like this:
   # assets:

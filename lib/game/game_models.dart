@@ -1,3 +1,31 @@
+import 'dart:convert';
+
+import 'package:flutter/services.dart';
+
+class Screen {
+  Map<String, dynamic> jsonContent;
+  Map<String, dynamic> variables;
+
+  Screen({
+    required this.jsonContent,
+    required this.variables,
+  });
+
+  factory Screen.fromJson(Map<String, dynamic> json) {
+    return Screen(
+      jsonContent: json['jsonContent'],
+      variables: json['variables'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'jsonContent': jsonContent,
+      'variables': variables,
+    };
+  }
+}
+
 class Game {
   String name;
   String type;
@@ -6,6 +34,7 @@ class Game {
   String author;
   String description;
   String icon;
+  Map<String, Screen> screens;
 
   Game({
     required this.name,
@@ -15,42 +44,65 @@ class Game {
     required this.author,
     required this.description,
     required this.icon,
+    required this.screens,
   });
 
   factory Game.fromJson(Map<String, dynamic> json) {
     return Game(
       name: json['name'],
       type: json['type'],
-      minPlayers: json['min-players'],
-      maxPlayers: json['max-players'],
+      minPlayers: json['minPlayers'],
+      maxPlayers: json['maxPlayers'],
       author: json['author'],
       description: json['description'],
       icon: json['icon'],
+      screens: Map<String, Screen>.from(json['screens']
+          .map((key, value) => MapEntry(key, Screen.fromJson(value)))),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'type': type,
+      'minPlayers': minPlayers,
+      'maxPlayers': maxPlayers,
+      'author': author,
+      'description': description,
+      'icon': icon,
+      'screens': screens.map((key, value) => MapEntry(key, value.toJson())),
+    };
   }
 }
 
-class File {
+class GameFile {
   String fileName;
   Game content;
 
-  File({
+  GameFile({
     required this.fileName,
     required this.content,
   });
 
-  factory File.fromJson(Map<String, dynamic> json) {
-    return File(
-      fileName: json['file_name'],
+  factory GameFile.fromJson(Map<String, dynamic> json) {
+    return GameFile(
+      fileName: json['fileName'],
       content: Game.fromJson(json['content']),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'fileName': fileName,
+      'content': content.toJson(),
+    };
   }
 }
 
 class PaginatedResponse {
   int page;
   int totalFiles;
-  List<File> files;
+  List<GameFile> files;
 
   PaginatedResponse({
     required this.page,
@@ -60,12 +112,45 @@ class PaginatedResponse {
 
   factory PaginatedResponse.fromJson(Map<String, dynamic> json) {
     var filesJson = json['files'] as List;
-    List<File> filesList = filesJson.map((fileJson) => File.fromJson(fileJson)).toList();
+    List<GameFile> filesList =
+    filesJson.map((fileJson) => GameFile.fromJson(fileJson)).toList();
 
     return PaginatedResponse(
       page: json['page'],
-      totalFiles: json['total_files'],
+      totalFiles: json['totalFiles'],
       files: filesList,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'page': page,
+      'totalFiles': totalFiles,
+      'files': files.map((file) => file.toJson()).toList(),
+    };
+  }
+}
+
+Future<GameFile> loadDefaultGame() async {
+  final String homeJson = await rootBundle.loadString('assets/pages/home.json');
+  final String endJson = await rootBundle.loadString('assets/pages/home.json');
+  final Map<String, dynamic> home = jsonDecode(homeJson);
+  final Map<String, dynamic> end = jsonDecode(endJson);
+
+  return GameFile(
+    fileName: 'current.json',
+    content: Game(
+      name: '',
+      type: '',
+      minPlayers: 1,
+      maxPlayers: 8,
+      author: '',
+      description: '',
+      icon: '',
+      screens: {
+        'home': Screen(variables: {}, jsonContent: home),
+        'end': Screen(variables: {}, jsonContent: end)
+      },
+    ),
+  );
 }
